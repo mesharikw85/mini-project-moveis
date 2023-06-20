@@ -1,8 +1,29 @@
 const express = require("express");
-const PORT = 8000;
+connectDataBsae = require("./database");
 
-const app = express;
+const moviesRoutes = require("./api/movies/movei.routes");
+const dotEnv = require("dotenv");
+dotEnv.config();
+const errorHandler = require("./middlewares/erroehandler");
+const notFoundHandler = require("./middlewares/notFoundHandler");
+const cors = require("cors");
+const morgan = require("morgan");
+const path = require("path");
+const app = express();
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port: ${PORT}`);
+connectDataBsae();
+
+app.use("/media", express.static(path.join(__dirname, "media")));
+app.use(cors());
+app.use(morgan("dev"));
+
+app.use(express.json());
+
+app.use("/movies", moviesRoutes);
+
+app.use(errorHandler);
+app.use(notFoundHandler);
+
+app.listen(process.env.PORT, () => {
+  console.log("The application is running on localhost:8000");
 });
